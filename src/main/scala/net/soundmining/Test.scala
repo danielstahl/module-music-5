@@ -8,6 +8,7 @@ import net.soundmining.modular.ModularSynth.{controlMultiply, controlSum, fmSawM
 import net.soundmining.synth.Instrument
 import net.soundmining.synth.Instrument.TAIL_ACTION
 import net.soundmining.synth.Utils.absoluteTimeToMillis
+import ModuleMusic5._
 
 object Test {
   def testShortAttack(modAmountMin: Double = 300, modAmountMax: Double = 3000, carr: String = "c6", mod: String = "fiss6"): Unit = {
@@ -33,6 +34,43 @@ object Test {
     val graph = pan.buildGraph(startTime, duration, pan.graph(Seq()))
 
     client.send(client.newBundle(absoluteTimeToMillis(startTime), graph))
+  }
+
+
+  def testPlayTable(rate: Double = 1.0): Unit = {
+    client.resetClock
+
+    soundPlays.mono(TABLE1)
+      .playMono(rate - 0.02, 8.0)
+      .lowPass(100)
+      .splay(0.2, 0)
+      .play(0, 0)
+
+    soundPlays.mono(TABLE1)
+      .playMono(rate + 0.02, 8.0)
+      .highPass(400)
+      .splay(-0.2, 0)
+      .play(0, 0)
+/*
+    soundPlays.mono(TABLE1)
+      .playMono(1.99, 1.0)
+      .splay(0, 0)
+      .play(0, 0)
+
+    soundPlays.mono(TABLE1)
+      .playMono(0.5, 1.0)
+      .splay(-0.2, 0)
+      .play(0, 0)*/
+  }
+
+  def testPlayBowl(rate: Double = 1.0): Unit = {
+    client.resetClock
+
+    soundPlays.mono(BOWL1)
+      .playMono(rate, 1.0)
+      .splay(0.2, 0)
+      .play(0, 0)
+
   }
 
   // ModuleMusic5.testSawAttack(modAmountMin = 300, modAmountMax = 5000, carr = "c7", mod = "fiss7", duration = 0.5)

@@ -2,8 +2,8 @@ package net.soundmining
 
 import net.soundmining.Spectrum.{makeFact, makeSpectrum2}
 import net.soundmining.modular.ModularInstrument.{AudioInstrument, ControlInstrument}
-import net.soundmining.modular.ModularSynth
 import net.soundmining.modular.ModularSynth._
+import net.soundmining.sound.{SoundPlay, SoundPlays}
 import net.soundmining.synth.Instrument.TAIL_ACTION
 import net.soundmining.synth.{Instrument, SuperColliderClient}
 import net.soundmining.synth.SuperColliderClient.loadDir
@@ -18,12 +18,23 @@ Maybe mix with real samples.
 object ModuleMusic5 {
   implicit val client: SuperColliderClient = SuperColliderClient()
   val SYNTH_DIR = "/Users/danielstahl/Documents/Projects/soundmining-modular/src/main/sc/synths"
+  val SOUND_DIR = "/Users/danielstahl/Documents/Music/Pieces/Module Music/module-music-5/sounds/module-music-5_sounds"
+
+  val BOWL1 = "bowl1"
+  val TABLE1 = "table1"
+
+  val soundPlays = SoundPlays(
+    soundPlays = Map(
+      BOWL1 -> SoundPlay(s"$SOUND_DIR/bowl-1.flac", 0.134, 5.254),
+      TABLE1 -> SoundPlay(s"$SOUND_DIR/table-1.flac", 0.0, 0.838),
+    ))
 
   def init(): Unit = {
     println("Starting up SuperCollider client")
     client.start
     Instrument.setupNodes(client)
     client.send(loadDir(SYNTH_DIR))
+    soundPlays.init
   }
 
   def fmSawNote(startTime: Double, duration: Double, carrier: Double, modulator: Double,
@@ -40,7 +51,7 @@ object ModuleMusic5 {
     val monoSound = extra(fm)
       .addAction(TAIL_ACTION)
 
-    val pan = panning(monoSound.asInstanceOf[AudioInstrument], panPosition())
+    val pan = splay(monoSound.asInstanceOf[AudioInstrument], staticControl(0.2), panPosition())
       .addAction(TAIL_ACTION).withNrOfChannels(2)
 
     pan.getOutputBus.staticBus(outputBus)
@@ -50,6 +61,18 @@ object ModuleMusic5 {
     client.send(client.newBundle(absoluteTimeToMillis(startTime), graph))
   }
 
+  def tableNote(startTime: Double, rate: Double = 1.0, center: Double, amp: Double = 1.0, outputBus: Int = 0): Unit =
+    playSound(startTime, rate, center, amp, outputBus, TABLE1)
+
+  def bowlNote(startTime: Double, rate: Double = 1.0, center: Double, amp: Double = 1.0, outputBus: Int = 0): Unit =
+    playSound(startTime, rate, center, amp, outputBus, BOWL1)
+
+  def playSound(startTime: Double, rate: Double = 1.0, center: Double, amp: Double = 1.0, outputBus: Int = 0, sound: String): Unit = {
+    soundPlays.mono(sound)
+      .playMono(rate, amp)
+      .splay(spread = 0.2, center)
+      .play(startTime, outputBus)
+  }
 
   def fmSineNote(startTime: Double, duration: Double, carrier: Double, modulator: Double,
                  modAmount: () => ControlInstrument,
@@ -66,7 +89,7 @@ object ModuleMusic5 {
     val monoSound = extra(fm)
       .addAction(TAIL_ACTION)
 
-    val pan = panning(monoSound.asInstanceOf[AudioInstrument], panPosition())
+    val pan = splay(monoSound.asInstanceOf[AudioInstrument], staticControl(0.4), panPosition())
       .addAction(TAIL_ACTION).withNrOfChannels(2)
 
     pan.getOutputBus.staticBus(outputBus)
@@ -142,16 +165,33 @@ object ModuleMusic5 {
     println(s"times $times")
 
     val sineModAmount = () => relativePercControl(100, 1000, 0.3, Right(Instrument.SINE))
-    val sineAmp = () => relativePercControl(0.001, 1, 0.3, Right(Instrument.SINE))
+    val sineAmp = () => relativePercControl(0.001, 0.3, 0.3, Right(Instrument.SINE))
 
-    fmSineNote(times.head, duration, theme._4(4), theme._4(4) * theme._3, sineModAmount, sineAmp, () => lineControl(0.6, -0.6))
-    fmSineNote(times(1), duration, theme._4(6), theme._4(6) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6))
-    fmSineNote(times(2), duration, theme._4(10), theme._4(10) * theme._3, sineModAmount, sineAmp, () => lineControl(0.6, -0.6))
-    fmSineNote(times(3), duration, theme._4(8), theme._4(8) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6))
-    fmSineNote(times(4), duration, theme._4(11), theme._4(11) * theme._3, sineModAmount, sineAmp, () => lineControl(0.6, -0.6))
-    fmSineNote(times(5), duration, theme._4(9), theme._4(9) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6))
-    fmSineNote(times(6), duration, theme._4(5), theme._4(5) * theme._3, sineModAmount, sineAmp, () => lineControl(0.6, -0.6))
-    fmSineNote(times(7), duration, theme._4(7), theme._4(7) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6))
+    //val filteredSound = (audio: AudioInstrument) => bandRejectFilter(audio, staticControl(400), staticControl(10))
+    val filteredSound = (audio: AudioInstrument) => audio
+
+    fmSineNote(times.head, duration, theme._4(4), theme._4(4) * theme._3, sineModAmount, sineAmp, () => lineControl(0.6, -0.6), filteredSound)
+    fmSineNote(times(1), duration, theme._4(6), theme._4(6) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6), filteredSound)
+    fmSineNote(times(2), duration, theme._4(10), theme._4(10) * theme._3, sineModAmount, sineAmp, () => lineControl(0.6, -0.6), filteredSound)
+    fmSineNote(times(3), duration, theme._4(8), theme._4(8) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6), filteredSound)
+    fmSineNote(times(4), duration, theme._4(11), theme._4(11) * theme._3, sineModAmount, sineAmp, () => lineControl(0.6, -0.6), filteredSound)
+    fmSineNote(times(5), duration, theme._4(9), theme._4(9) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6), filteredSound)
+    fmSineNote(times(6), duration, theme._4(5), theme._4(5) * theme._3, sineModAmount, sineAmp, () => lineControl(0.6, -0.6), filteredSound)
+    fmSineNote(times(7), duration, theme._4(7), theme._4(7) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6), filteredSound)
+
+
+    val bowl = (startTime: Double) => {
+      bowlNote(startTime + 0.05, 1, -0.4, 1)
+      bowlNote(startTime + 0.05, 1.01, 0.7, 1)
+      bowlNote(startTime + 0.05, 0.99, -0.5, 1)
+
+      bowlNote(startTime + 0.6, 0.5, -0.4, 1)
+      bowlNote(startTime + 0.6, 0.51, 0.7, 1)
+      bowlNote(startTime + 0.6, 0.49, -0.5, 1)
+    }
+
+    val bowlTimes = Seq(times(2), times(5))
+    bowlTimes.foreach(bowl(_))
 
     absoluteTimeToMillis(times(5) + makeTime(pulse * 21))
   }
@@ -186,7 +226,7 @@ object ModuleMusic5 {
     println(s"times $times")
 
     val sineModAmount = () => relativePercControl(100, 1000, 0.3, Right(Instrument.SINE))
-    val sineAmp = () => relativePercControl(0.001, 1, 0.3, Right(Instrument.SINE))
+    val sineAmp = () => relativePercControl(0.001, 0.3, 0.3, Right(Instrument.SINE))
 
     // 8 10 6 4
     // 7 5 9 11
@@ -198,6 +238,19 @@ object ModuleMusic5 {
     fmSineNote(times(5), duration, theme._4(5), theme._4(5) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6))
     fmSineNote(times(6), duration, theme._4(9), theme._4(9) * theme._3, sineModAmount, sineAmp, () => lineControl(0.6, -0.6))
     fmSineNote(times(7), duration, theme._4(11), theme._4(11) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6))
+
+    val bowl = (startTime: Double) => {
+      bowlNote(startTime + 0.05, 0.5, -0.4, 1)
+      bowlNote(startTime + 0.05, 0.51, 0.7, 1)
+      bowlNote(startTime + 0.05, 0.49, -0.5, 1)
+
+      bowlNote(startTime + 0.6, 1, -0.4, 1)
+      bowlNote(startTime + 0.6, 1.01, 0.7, 1)
+      bowlNote(startTime + 0.6, 0.99, -0.5, 1)
+    }
+
+    val bowlTimes = Seq(times(1), times(6))
+    bowlTimes.foreach(bowl(_))
 
     (absoluteTimeToMillis(times(2) + makeTime(pulse * 21)),
     absoluteTimeToMillis(times(7) + makeTime(pulse * (34 + 21))))
@@ -228,6 +281,8 @@ object ModuleMusic5 {
     val percAmp = () => relativePercControl(0.001, 1, 0.001, Left(-8))
     val sineAmp = () => relativePercControl(0.001, 1, 0.3, Right(Instrument.SINE))
 
+    val filteredSound = (audio: AudioInstrument) => bandRejectFilter(audio, staticControl(400), staticControl(2))
+
     val twoShortNote = (startTime: Double) => {
       val (first, second) = (2, 3)
       //val first: Int = 2
@@ -235,12 +290,14 @@ object ModuleMusic5 {
       fmSawNote(startTime, 3, theme._4(first), theme._4(first) * theme._3,
         percModAmount,
         percAmp,
-        () => lineControl(-0.2, 0.2))
+        () => lineControl(-0.2, 0.2),
+        filteredSound)
 
       fmSawNote(startTime + 0.1, 1, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
         sineModAmount,
         sineAmp,
-        () => lineControl(0.2, -0.2))
+        () => lineControl(0.2, -0.2),
+        filteredSound)
     }
 
     val threeShortNote = (startTime: Double) => {
@@ -251,17 +308,20 @@ object ModuleMusic5 {
       fmSawNote(startTime, 3, theme._4(first), theme._4(first) * theme._3,
         percModAmount,
         percAmp,
-        () => lineControl(-0.3, -0.4))
+        () => lineControl(-0.3, -0.4),
+        filteredSound)
 
       fmSawNote(startTime + 0.075, 1, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
         sineModAmount,
         sineAmp,
-        () => lineControl(-0.3, 0.3))
+        () => lineControl(-0.3, 0.3),
+        filteredSound)
 
       fmSawNote(startTime + 0.25, 2, theme._4(third) * 1.02, theme._4(third) * theme._3 * 0.98,
         percModAmount,
         percAmp,
-        () => lineControl(0.3, 0.4))
+        () => lineControl(0.3, 0.4),
+        filteredSound)
     }
 
     val twoLongNote = (startTime: Double) => {
@@ -271,12 +331,28 @@ object ModuleMusic5 {
       fmSawNote(startTime, 2, theme._4(first), theme._4(first) * theme._3,
         sineModAmount,
         sineAmp,
-        () => lineControl(0.3, -0.2))
+        () => lineControl(0.3, -0.2),
+        filteredSound)
 
       fmSawNote(startTime + 0.2, 2, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
         sineModAmount,
         sineAmp,
-        () => lineControl(-0.3, 0.2))
+        () => lineControl(-0.3, 0.2),
+        filteredSound)
+    }
+
+    val table = (startTime: Double) => {
+      tableNote(startTime + 0.1, 0.5, 0.3, 1.0, 0)
+      tableNote(startTime + 0.1, 0.51, -0.9, 1.0, 0)
+      tableNote(startTime + 0.1, 0.49, 0.7, 1.0, 0)
+
+      tableNote(startTime + 0.7, 1.0, 0.3, 1.0, 0)
+      tableNote(startTime + 0.7, 1.01, -0.9, 1.0, 0)
+      tableNote(startTime + 0.7, 0.99, 0.7, 1.0, 0)
+
+      tableNote(startTime + 0.00, 0.10, 0.3, 1.0, 0)
+      tableNote(startTime + 0.00, 0.11, -0.9, 1.0, 0)
+      tableNote(startTime + 0.00, 0.09, 0.7, 1.0, 0)
     }
 
     val pulse = theme._4(3)
@@ -294,6 +370,9 @@ object ModuleMusic5 {
     times.zipWithIndex.foreach {
       case (time, i) => notes(i)(time)
     }
+
+    val tableTimes = Seq(times(2), times(6))
+    tableTimes.foreach(table(_))
 
     // next start
     absoluteTimeToMillis(makeTime(pulse * 34))
@@ -322,6 +401,7 @@ object ModuleMusic5 {
     val sineModAmount = () => relativePercControl(300, 3000, 0.3, Right(Instrument.SINE))
     val percAmp = () => relativePercControl(0.001, 1, 0.001, Left(-8))
     val sineAmp = () => relativePercControl(0.001, 1, 0.3, Right(Instrument.SINE))
+    val filteredSound = (audio: AudioInstrument) => bandRejectFilter(audio, staticControl(400), staticControl(2))
 
     val twoShortNote = (startTime: Double) => {
       val (first, second) = (3, 2)
@@ -330,12 +410,14 @@ object ModuleMusic5 {
       fmSawNote(startTime, 3, theme._4(first), theme._4(first) * theme._3,
         percModAmount,
         percAmp,
-        () => lineControl(-0.2, 0.2))
+        () => lineControl(-0.2, 0.2),
+        filteredSound)
 
       fmSawNote(startTime + 0.1, 1, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
         sineModAmount,
         sineAmp,
-        () => lineControl(0.2, -0.2))
+        () => lineControl(0.2, -0.2),
+        filteredSound)
     }
 
     val threeShortNote = (startTime: Double) => {
@@ -346,17 +428,20 @@ object ModuleMusic5 {
       fmSawNote(startTime, 3, theme._4(first), theme._4(first) * theme._3,
         percModAmount,
         percAmp,
-        () => lineControl(-0.3, -0.4))
+        () => lineControl(-0.3, -0.4),
+        filteredSound)
 
       fmSawNote(startTime + 0.075, 1, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
         sineModAmount,
         sineAmp,
-        () => lineControl(-0.3, 0.3))
+        () => lineControl(-0.3, 0.3),
+        filteredSound)
 
       fmSawNote(startTime + 0.25, 2, theme._4(third) * 1.02, theme._4(third) * theme._3 * 0.98,
         percModAmount,
         percAmp,
-        () => lineControl(0.3, 0.4))
+        () => lineControl(0.3, 0.4),
+        filteredSound)
     }
 
     val twoLongNote = (startTime: Double) => {
@@ -366,12 +451,28 @@ object ModuleMusic5 {
       fmSawNote(startTime, 2, theme._4(first), theme._4(first) * theme._3,
         sineModAmount,
         sineAmp,
-        () => lineControl(0.3, -0.2))
+        () => lineControl(0.3, -0.2),
+        filteredSound)
 
       fmSawNote(startTime + 0.2, 2, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
         sineModAmount,
         sineAmp,
-        () => lineControl(-0.3, 0.2))
+        () => lineControl(-0.3, 0.2),
+        filteredSound)
+    }
+
+    val table = (startTime: Double) => {
+      tableNote(startTime + 0.1, 1.0, 0.3, 1.0, 0)
+      tableNote(startTime + 0.1, 1.01, -0.9, 1.0, 0)
+      tableNote(startTime + 0.1, 0.99, 0.7, 1.0, 0)
+
+      tableNote(startTime + 0.7, 0.5, 0.3, 1.0, 0)
+      tableNote(startTime + 0.7, 0.51, -0.9, 1.0, 0)
+      tableNote(startTime + 0.7, 0.49, 0.7, 1.0, 0)
+
+      tableNote(startTime + 0.00, 0.10, 0.3, 1.0, 0)
+      tableNote(startTime + 0.00, 0.11, -0.9, 1.0, 0)
+      tableNote(startTime + 0.00, 0.09, 0.7, 1.0, 0)
     }
 
     val pulse = theme._4(3)
@@ -389,6 +490,10 @@ object ModuleMusic5 {
     times.zipWithIndex.foreach {
       case (time, i) => notes(i)(time)
     }
+
+    val tableTimes = Seq(times(1), times(7))
+    tableTimes.foreach(table(_))
+
     absoluteTimeToMillis(times(9) + makeTime(pulse * 8))
   }
 
@@ -415,6 +520,7 @@ object ModuleMusic5 {
     val sineModAmount = () => relativePercControl(300, 3000, 0.3, Right(Instrument.SINE))
     val percAmp = () => relativePercControl(0.001, 1, 0.001, Left(-8))
     val sineAmp = () => relativePercControl(0.001, 1, 0.3, Right(Instrument.SINE))
+    val filteredSound = (audio: AudioInstrument) => bandRejectFilter(audio, staticControl(400), staticControl(2))
 
     val twoShortNote = (startTime: Double) => {
       val (first, second) = (2, 3)
@@ -422,12 +528,14 @@ object ModuleMusic5 {
       fmSawNote(startTime, 1, theme._4(first) * 1.01, theme._4(first) * theme._3 * 0.99,
         sineModAmount,
         sineAmp,
-        () => lineControl(0.2, -0.2))
+        () => lineControl(0.2, -0.2),
+        filteredSound)
 
       fmSawNote(startTime + 0.1, 3, theme._4(second), theme._4(second) * theme._3,
         percModAmount,
         percAmp,
-        () => lineControl(-0.2, 0.2))
+        () => lineControl(-0.2, 0.2),
+        filteredSound)
     }
 
     val threeShortNote = (startTime: Double) => {
@@ -437,17 +545,20 @@ object ModuleMusic5 {
       fmSawNote(startTime, 2, theme._4(first) * 1.02, theme._4(first) * theme._3 * 0.98,
         percModAmount,
         percAmp,
-        () => lineControl(0.3, 0.4))
+        () => lineControl(0.3, 0.4),
+        filteredSound)
 
       fmSawNote(startTime + 0.075, 1, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
         sineModAmount,
         sineAmp,
-        () => lineControl(-0.3, 0.3))
+        () => lineControl(-0.3, 0.3),
+        filteredSound)
 
       fmSawNote(startTime + 0.25, 3, theme._4(third), theme._4(third) * theme._3,
         percModAmount,
         percAmp,
-        () => lineControl(-0.3, -0.4))
+        () => lineControl(-0.3, -0.4),
+        filteredSound)
     }
 
     val twoLongNote = (startTime: Double) => {
@@ -456,12 +567,28 @@ object ModuleMusic5 {
       fmSawNote(startTime, 2, theme._4(first) * 1.01, theme._4(first) * theme._3 * 0.99,
         sineModAmount,
         sineAmp,
-        () => lineControl(-0.3, 0.2))
+        () => lineControl(-0.3, 0.2),
+        filteredSound)
 
       fmSawNote(startTime + 0.2, 2, theme._4(second), theme._4(second) * theme._3,
         sineModAmount,
         sineAmp,
-        () => lineControl(0.3, -0.2))
+        () => lineControl(0.3, -0.2),
+        filteredSound)
+    }
+
+    val table = (startTime: Double) => {
+      tableNote(startTime + 0.1, 1.0, 0.3, 1.0, 0)
+      tableNote(startTime + 0.1, 1.01, -0.9, 1.0, 0)
+      tableNote(startTime + 0.1, 0.99, 0.7, 1.0, 0)
+
+      tableNote(startTime + 0.7, 0.5, 0.3, 1.0, 0)
+      tableNote(startTime + 0.7, 0.51, -0.9, 1.0, 0)
+      tableNote(startTime + 0.7, 0.49, 0.7, 1.0, 0)
+
+      tableNote(startTime + 0.00, 0.10, 0.3, 1.0, 0)
+      tableNote(startTime + 0.00, 0.11, -0.9, 1.0, 0)
+      tableNote(startTime + 0.00, 0.09, 0.7, 1.0, 0)
     }
 
     val pulse = theme._4(3)
@@ -474,6 +601,9 @@ object ModuleMusic5 {
       pulse * 13, pulse * 13, pulse * 13, pulse * 8, pulse * 13,
       pulse * 13, pulse * 13, pulse * 8, pulse * 13, pulse * 13))
       .map(makeTime)
+
+    val tableTimes = Seq(times(3), times(5), times(9))
+    tableTimes.foreach(table(_))
 
     println(s"Times $times")
     times.zipWithIndex.foreach {
@@ -504,6 +634,7 @@ object ModuleMusic5 {
       val sineModAmount = () => relativePercControl(300, 3000, 0.3, Right(Instrument.SINE))
       val percAmp = () => relativePercControl(0.001, 1, 0.001, Left(-8))
       val sineAmp = () => relativePercControl(0.001, 1, 0.3, Right(Instrument.SINE))
+      val filteredSound = (audio: AudioInstrument) => bandRejectFilter(audio, staticControl(400), staticControl(2))
 
       val twoShortNote = (startTime: Double) => {
         val (first, second) = (2, 3)
@@ -512,12 +643,14 @@ object ModuleMusic5 {
         fmSawNote(startTime, 3, theme._4(first), theme._4(first) * theme._3,
           percModAmount,
           percAmp,
-          () => lineControl(-0.2, 0.2))
+          () => lineControl(-0.2, 0.2),
+          filteredSound)
 
         fmSawNote(startTime + 0.1, 1, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
           sineModAmount,
           sineAmp,
-          () => lineControl(0.2, -0.2))
+          () => lineControl(0.2, -0.2),
+          filteredSound)
       }
 
       val threeShortNote = (startTime: Double) => {
@@ -528,17 +661,20 @@ object ModuleMusic5 {
         fmSawNote(startTime, 3, theme._4(first), theme._4(first) * theme._3,
           percModAmount,
           percAmp,
-          () => lineControl(-0.3, -0.4))
+          () => lineControl(-0.3, -0.4),
+          filteredSound)
 
         fmSawNote(startTime + 0.075, 1, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
           sineModAmount,
           sineAmp,
-          () => lineControl(-0.3, 0.3))
+          () => lineControl(-0.3, 0.3),
+          filteredSound)
 
         fmSawNote(startTime + 0.25, 2, theme._4(third) * 1.02, theme._4(third) * theme._3 * 0.98,
           percModAmount,
           percAmp,
-          () => lineControl(0.3, 0.4))
+          () => lineControl(0.3, 0.4),
+          filteredSound)
       }
 
       val twoLongNote = (startTime: Double) => {
@@ -548,12 +684,28 @@ object ModuleMusic5 {
         fmSawNote(startTime, 2, theme._4(first), theme._4(first) * theme._3,
           sineModAmount,
           sineAmp,
-          () => lineControl(0.3, -0.2))
+          () => lineControl(0.3, -0.2),
+          filteredSound)
 
         fmSawNote(startTime + 0.2, 2, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
           sineModAmount,
           sineAmp,
-          () => lineControl(-0.3, 0.2))
+          () => lineControl(-0.3, 0.2),
+          filteredSound)
+      }
+
+      val table = (startTime: Double) => {
+        tableNote(startTime + 0.1, 0.5, 0.3, 1.0, 0)
+        tableNote(startTime + 0.1, 0.51, -0.9, 1.0, 0)
+        tableNote(startTime + 0.1, 0.49, 0.7, 1.0, 0)
+
+        tableNote(startTime + 0.7, 1.0, 0.3, 1.0, 0)
+        tableNote(startTime + 0.7, 1.01, -0.9, 1.0, 0)
+        tableNote(startTime + 0.7, 0.99, 0.7, 1.0, 0)
+
+        tableNote(startTime + 0.00, 0.10, 0.3, 1.0, 0)
+        tableNote(startTime + 0.00, 0.11, -0.9, 1.0, 0)
+        tableNote(startTime + 0.00, 0.09, 0.7, 1.0, 0)
       }
 
       val pulse = theme._4(3)
@@ -566,6 +718,9 @@ object ModuleMusic5 {
         pulse * 13, pulse * 13, pulse * 13/*, pulse * 8, pulse * 13,
         pulse * 13, pulse * 13, pulse * 8, pulse * 13, pulse * 13*/))
         .map(makeTime)
+
+      val tableTimes = Seq(times(2))
+      tableTimes.foreach(table(_))
 
       println(s"Times $times")
       times.zipWithIndex.foreach {
