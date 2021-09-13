@@ -248,8 +248,8 @@ object ModuleMusic5 {
       bowlNote(startTime + 0.6, 1.01, 0.7, 1)
       bowlNote(startTime + 0.6, 0.99, -0.5, 1)
     }
-
-    val bowlTimes = Seq(times(1), times(6))
+    
+    val bowlTimes = Seq(times(2), times(7))
     bowlTimes.foreach(bowl(_))
 
     (absoluteTimeToMillis(times(2) + makeTime(pulse * 21)),
@@ -711,12 +711,10 @@ object ModuleMusic5 {
       val pulse = theme._4(3)
 
       val notes = Seq(
-        twoShortNote, twoShortNote, twoLongNote/*, twoShortNote, twoLongNote,
-        threeShortNote, threeShortNote, twoLongNote, threeShortNote, twoLongNote,*/
+        twoShortNote, twoShortNote, twoLongNote
       )
       val times = Melody.absolute(startTime, Seq(
-        pulse * 13, pulse * 13, pulse * 13/*, pulse * 8, pulse * 13,
-        pulse * 13, pulse * 13, pulse * 8, pulse * 13, pulse * 13*/))
+        pulse * 13, pulse * 13, pulse * 13))
         .map(makeTime)
 
       val tableTimes = Seq(times(2))
