@@ -211,41 +211,41 @@ object ModuleMusic5 {
 
     val duration = makeTime(pulse * 55)
 
-    val sineModAmount = () => relativePercControl(100, 1000, 0.3, Right(Instrument.SINE))
-    val sineAmpLow = () => relativePercControl(0.001, 0.2, 0.3, Right(Instrument.SINE))
-    val sineAmpHigh = () => relativePercControl(0.001, 0.8, 0.3, Right(Instrument.SINE))
+    val sineModAmount = (attack: Double) => () => relativePercControl(100, 1000, attack, Right(Instrument.SINE))
+    val sineAmpLow = (attack: Double) => () => relativePercControl(0.001, 0.2, attack, Right(Instrument.SINE))
+    val sineAmpHigh = (attack: Double) => () => relativePercControl(0.001, 0.8, attack, Right(Instrument.SINE))
 
     val filter1: (Double, Double) = (200, 10)
     val filter2: (Double, Double) = (3000, 10)
     val filter3: (Double, Double) = (700, 10)
     val filter4: (Double, Double) = (1000, 10)
 
-    def playSine(startTime: Double, carrier: Double, modulator: Double): Unit = {
-      fmSineNote(startTime, duration, carrier, modulator, sineModAmount, sineAmpLow, () => lineControl(0.5, 0.7),
-        spread = 0.4,
+    def playSine(startTime: Double, carrier: Double, modulator: Double, attack: Double, pan: (Double, Double)): Unit = {
+      fmSineNote(startTime, duration, carrier, modulator, sineModAmount(attack), sineAmpLow(attack), () => lineControl(pan._1, pan._2),
+        spread = 0.2,
         audio => bandRejectFilter(audio, staticControl(filter1._1), staticControl(filter1._2)))
 
-      fmSineNote(startTime , duration, carrier, modulator, sineModAmount, sineAmpHigh, () => lineControl(0.3, 0.9),
-        spread = 0.4,
+      fmSineNote(startTime , duration, carrier, modulator, sineModAmount(attack), sineAmpHigh(attack), () => lineControl(pan._1, pan._2),
+        spread = 0.2,
         audio => bandRejectFilter(audio, staticControl(filter2._1), staticControl(filter2._2)))
 
-      fmSineNote(startTime, duration, carrier, modulator, sineModAmount, sineAmpLow, () => lineControl(-0.3, -0.7),
-        spread = 0.4,
+      fmSineNote(startTime, duration, carrier, modulator, sineModAmount(attack), sineAmpLow(attack), () => lineControl(pan._1, pan._2),
+        spread = 0.2,
         audio => bandRejectFilter(audio, staticControl(filter3._1), staticControl(filter3._2)))
 
-      fmSineNote(startTime , duration, carrier, modulator, sineModAmount, sineAmpHigh, () => lineControl(-0.3, -0.9),
-        spread = 0.4,
+      fmSineNote(startTime , duration, carrier, modulator, sineModAmount(attack), sineAmpHigh(attack), () => lineControl(pan._1, pan._2),
+        spread = 0.2,
         audio => bandRejectFilter(audio, staticControl(filter4._1), staticControl(filter4._2)))
     }
 
-    playSine(times.head, theme._4(4), theme._4(4) * theme._3)
-    playSine(times(1), theme._4(6), theme._4(6) * theme._3)
-    playSine(times(2), theme._4(10), theme._4(10) * theme._3)
-    playSine(times(3), theme._4(8), theme._4(8) * theme._3)
-    playSine(times(4), theme._4(11), theme._4(11) * theme._3)
-    playSine(times(5), theme._4(9), theme._4(9) * theme._3)
-    playSine(times(6), theme._4(5), theme._4(5) * theme._3)
-    playSine(times(7), theme._4(7), theme._4(7) * theme._3)
+    playSine(times.head, theme._4(4), theme._4(4) * theme._3, 0.3, (-0.6, 0.6))
+    playSine(times(1), theme._4(6), theme._4(6) * theme._3, 0.3, (0.6, -0.6))
+    playSine(times(2), theme._4(10), theme._4(10) * theme._3, 0.3, (-0.6, 0.6))
+    playSine(times(3), theme._4(8), theme._4(8) * theme._3, 0.3, (0.6, -0.6))
+    playSine(times(4), theme._4(11), theme._4(11) * theme._3, 0.3, (-0.6, 0.6))
+    playSine(times(5), theme._4(9), theme._4(9) * theme._3, 0.3, (0.6, -0.6))
+    playSine(times(6), theme._4(5), theme._4(5) * theme._3, 0.3, (-0.6, 0.6))
+    playSine(times(7), theme._4(7), theme._4(7) * theme._3, 0.3, (0.6, -0.6))
 
     println(s"duration $duration")
     println(s"times $times")
@@ -295,43 +295,43 @@ object ModuleMusic5 {
     println(s"duration $duration")
     println(s"times $times")
 
-    val sineModAmount = () => relativePercControl(100, 1000, 0.3, Right(Instrument.SINE))
-    val sineAmpLow = () => relativePercControl(0.001, 0.2, 0.3, Right(Instrument.SINE))
-    val sineAmpHigh = () => relativePercControl(0.001, 0.8, 0.3, Right(Instrument.SINE))
+    val sineModAmount = (attack: Double) => () => relativePercControl(100, 1000, attack, Right(Instrument.SINE))
+    val sineAmpLow = (attack: Double) => () => relativePercControl(0.001, 0.2, attack, Right(Instrument.SINE))
+    val sineAmpHigh = (attack: Double) => () => relativePercControl(0.001, 0.8, attack, Right(Instrument.SINE))
 
     val filter1: (Double, Double) = (200, 10)
     val filter2: (Double, Double) = (3000, 10)
     val filter3: (Double, Double) = (700, 10)
     val filter4: (Double, Double) = (1000, 10)
 
-    def playSine(startTime: Double, carrier: Double, modulator: Double): Unit = {
-      fmSineNote(startTime, duration, carrier, modulator, sineModAmount, sineAmpLow, () => lineControl(0.5, 0.7),
-        spread = 0.4,
+    def playSine(startTime: Double, carrier: Double, modulator: Double, attack: Double, pan: (Double, Double)): Unit = {
+      fmSineNote(startTime, duration, carrier, modulator, sineModAmount(attack), sineAmpLow(attack), () => lineControl(pan._1, pan._2),
+        spread = 0.2,
         audio => bandRejectFilter(audio, staticControl(filter1._1), staticControl(filter1._2)))
 
-      fmSineNote(startTime , duration, carrier, modulator, sineModAmount, sineAmpHigh, () => lineControl(0.3, 0.9),
-        spread = 0.4,
+      fmSineNote(startTime , duration, carrier, modulator, sineModAmount(attack), sineAmpHigh(attack), () => lineControl(pan._1, pan._2),
+        spread = 0.2,
         audio => bandRejectFilter(audio, staticControl(filter2._1), staticControl(filter2._2)))
 
-      fmSineNote(startTime, duration, carrier, modulator, sineModAmount, sineAmpLow, () => lineControl(-0.3, -0.7),
-        spread = 0.4,
+      fmSineNote(startTime, duration, carrier, modulator, sineModAmount(attack), sineAmpLow(attack), () => lineControl(pan._1, pan._2),
+        spread = 0.2,
         audio => bandRejectFilter(audio, staticControl(filter3._1), staticControl(filter3._2)))
 
-      fmSineNote(startTime , duration, carrier, modulator, sineModAmount, sineAmpHigh, () => lineControl(-0.3, -0.9),
-        spread = 0.4,
+      fmSineNote(startTime , duration, carrier, modulator, sineModAmount(attack), sineAmpHigh(attack), () => lineControl(pan._1, pan._2),
+        spread = 0.2,
         audio => bandRejectFilter(audio, staticControl(filter4._1), staticControl(filter4._2)))
     }
 
     // 8 10 6 4
     // 7 5 9 11
-    playSine(times.head, theme._4(8), theme._4(8) * theme._3)
-    playSine(times(1), theme._4(10), theme._4(10) * theme._3)
-    playSine(times(2), theme._4(6), theme._4(6) * theme._3)
-    playSine(times(3), theme._4(4), theme._4(4) * theme._3)
-    playSine(times(4), theme._4(7), theme._4(7) * theme._3)
-    playSine(times(5), theme._4(5), theme._4(5) * theme._3)
-    playSine(times(6), theme._4(9), theme._4(9) * theme._3)
-    playSine(times(7), theme._4(11), theme._4(11) * theme._3)
+    playSine(times.head, theme._4(8), theme._4(8) * theme._3, 0.6, (-0.6, 0.6))
+    playSine(times(1), theme._4(10), theme._4(10) * theme._3, 0.6, (0.6, -0.6))
+    playSine(times(2), theme._4(6), theme._4(6) * theme._3, 0.6, (-0.6, 0.6))
+    playSine(times(3), theme._4(4), theme._4(4) * theme._3, 0.6, (0.6, -0.6))
+    playSine(times(4), theme._4(7), theme._4(7) * theme._3, 0.6, (-0.6, 0.6))
+    playSine(times(5), theme._4(5), theme._4(5) * theme._3, 0.6, (0.6, -0.6))
+    playSine(times(6), theme._4(9), theme._4(9) * theme._3, 0.6, (-0.6, 0.6))
+    playSine(times(7), theme._4(11), theme._4(11) * theme._3, 0.6, (0.6, -0.6))
 
     val bowl = (startTime: Double) => {
       bowlNote(startTime + 0.05, 0.5, -0.4, 1)
