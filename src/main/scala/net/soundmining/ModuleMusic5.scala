@@ -61,6 +61,30 @@ object ModuleMusic5 {
     client.send(client.newBundle(absoluteTimeToMillis(startTime), graph))
   }
 
+  def fmPulseNote(startTime: Double, duration: Double, carrier: Double, modulator: Double,
+                modAmount: () => ControlInstrument,
+                amp: () => ControlInstrument,
+                panPosition: () => ControlInstrument,
+                extra: AudioInstrument => AudioInstrument = a => a, outputBus: Int = 0): Unit = {
+    val fm = fmPulseModulate(
+      staticControl(carrier),
+      sawOsc(modAmount(),
+        staticControl(modulator)), amp())
+      .addAction(TAIL_ACTION)
+
+    val monoSound = extra(fm)
+      .addAction(TAIL_ACTION)
+
+    val pan = splay(monoSound.asInstanceOf[AudioInstrument], staticControl(0.2), panPosition())
+      .addAction(TAIL_ACTION).withNrOfChannels(2)
+
+    pan.getOutputBus.staticBus(outputBus)
+
+    val graph = pan.buildGraph(startTime, duration, pan.graph(Seq()))
+
+    client.send(client.newBundle(absoluteTimeToMillis(startTime), graph))
+  }
+
   def tableNote(startTime: Double, rate: Double = 1.0, center: Double, amp: Double = 1.0, outputBus: Int = 0): Unit =
     playSound(startTime, rate, center, amp, outputBus, TABLE1)
 
@@ -78,9 +102,35 @@ object ModuleMusic5 {
                  modAmount: () => ControlInstrument,
                  amp: () => ControlInstrument,
                  panPosition: () => ControlInstrument,
+                 spread: Double = 0.4,
                  extra: AudioInstrument => AudioInstrument = a => a, outputBus: Int = 0): Unit = {
 
     val fm = fmSineModulate(
+      staticControl(carrier),
+      sineOsc(modAmount(),
+        staticControl(modulator)), amp())
+      .addAction(TAIL_ACTION)
+
+    val monoSound = extra(fm)
+      .addAction(TAIL_ACTION)
+
+    val pan = splay(monoSound.asInstanceOf[AudioInstrument], staticControl(spread), panPosition())
+      .addAction(TAIL_ACTION).withNrOfChannels(2)
+
+    pan.getOutputBus.staticBus(outputBus)
+
+    val graph = pan.buildGraph(startTime, duration, pan.graph(Seq()))
+
+    client.send(client.newBundle(absoluteTimeToMillis(startTime), graph))
+  }
+
+  def fmTriangleNote(startTime: Double, duration: Double, carrier: Double, modulator: Double,
+                     modAmount: () => ControlInstrument,
+                     amp: () => ControlInstrument,
+                     panPosition: () => ControlInstrument,
+                     extra: AudioInstrument => AudioInstrument = a => a, outputBus: Int = 0): Unit = {
+
+    val fm = fmTriangleModulate(
       staticControl(carrier),
       sineOsc(modAmount(),
         staticControl(modulator)), amp())
@@ -161,24 +211,44 @@ object ModuleMusic5 {
 
     val duration = makeTime(pulse * 55)
 
+    val sineModAmount = () => relativePercControl(100, 1000, 0.3, Right(Instrument.SINE))
+    val sineAmpLow = () => relativePercControl(0.001, 0.2, 0.3, Right(Instrument.SINE))
+    val sineAmpHigh = () => relativePercControl(0.001, 0.8, 0.3, Right(Instrument.SINE))
+
+    val filter1: (Double, Double) = (200, 10)
+    val filter2: (Double, Double) = (3000, 10)
+    val filter3: (Double, Double) = (700, 10)
+    val filter4: (Double, Double) = (1000, 10)
+
+    def playSine(startTime: Double, carrier: Double, modulator: Double): Unit = {
+      fmSineNote(startTime, duration, carrier, modulator, sineModAmount, sineAmpLow, () => lineControl(0.5, 0.7),
+        spread = 0.4,
+        audio => bandRejectFilter(audio, staticControl(filter1._1), staticControl(filter1._2)))
+
+      fmSineNote(startTime , duration, carrier, modulator, sineModAmount, sineAmpHigh, () => lineControl(0.3, 0.9),
+        spread = 0.4,
+        audio => bandRejectFilter(audio, staticControl(filter2._1), staticControl(filter2._2)))
+
+      fmSineNote(startTime, duration, carrier, modulator, sineModAmount, sineAmpLow, () => lineControl(-0.3, -0.7),
+        spread = 0.4,
+        audio => bandRejectFilter(audio, staticControl(filter3._1), staticControl(filter3._2)))
+
+      fmSineNote(startTime , duration, carrier, modulator, sineModAmount, sineAmpHigh, () => lineControl(-0.3, -0.9),
+        spread = 0.4,
+        audio => bandRejectFilter(audio, staticControl(filter4._1), staticControl(filter4._2)))
+    }
+
+    playSine(times.head, theme._4(4), theme._4(4) * theme._3)
+    playSine(times(1), theme._4(6), theme._4(6) * theme._3)
+    playSine(times(2), theme._4(10), theme._4(10) * theme._3)
+    playSine(times(3), theme._4(8), theme._4(8) * theme._3)
+    playSine(times(4), theme._4(11), theme._4(11) * theme._3)
+    playSine(times(5), theme._4(9), theme._4(9) * theme._3)
+    playSine(times(6), theme._4(5), theme._4(5) * theme._3)
+    playSine(times(7), theme._4(7), theme._4(7) * theme._3)
+
     println(s"duration $duration")
     println(s"times $times")
-
-    val sineModAmount = () => relativePercControl(100, 1000, 0.3, Right(Instrument.SINE))
-    val sineAmp = () => relativePercControl(0.001, 0.3, 0.3, Right(Instrument.SINE))
-
-    //val filteredSound = (audio: AudioInstrument) => bandRejectFilter(audio, staticControl(400), staticControl(10))
-    val filteredSound = (audio: AudioInstrument) => audio
-
-    fmSineNote(times.head, duration, theme._4(4), theme._4(4) * theme._3, sineModAmount, sineAmp, () => lineControl(0.6, -0.6), filteredSound)
-    fmSineNote(times(1), duration, theme._4(6), theme._4(6) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6), filteredSound)
-    fmSineNote(times(2), duration, theme._4(10), theme._4(10) * theme._3, sineModAmount, sineAmp, () => lineControl(0.6, -0.6), filteredSound)
-    fmSineNote(times(3), duration, theme._4(8), theme._4(8) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6), filteredSound)
-    fmSineNote(times(4), duration, theme._4(11), theme._4(11) * theme._3, sineModAmount, sineAmp, () => lineControl(0.6, -0.6), filteredSound)
-    fmSineNote(times(5), duration, theme._4(9), theme._4(9) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6), filteredSound)
-    fmSineNote(times(6), duration, theme._4(5), theme._4(5) * theme._3, sineModAmount, sineAmp, () => lineControl(0.6, -0.6), filteredSound)
-    fmSineNote(times(7), duration, theme._4(7), theme._4(7) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6), filteredSound)
-
 
     val bowl = (startTime: Double) => {
       bowlNote(startTime + 0.05, 1, -0.4, 1)
@@ -226,18 +296,42 @@ object ModuleMusic5 {
     println(s"times $times")
 
     val sineModAmount = () => relativePercControl(100, 1000, 0.3, Right(Instrument.SINE))
-    val sineAmp = () => relativePercControl(0.001, 0.3, 0.3, Right(Instrument.SINE))
+    val sineAmpLow = () => relativePercControl(0.001, 0.2, 0.3, Right(Instrument.SINE))
+    val sineAmpHigh = () => relativePercControl(0.001, 0.8, 0.3, Right(Instrument.SINE))
+
+    val filter1: (Double, Double) = (200, 10)
+    val filter2: (Double, Double) = (3000, 10)
+    val filter3: (Double, Double) = (700, 10)
+    val filter4: (Double, Double) = (1000, 10)
+
+    def playSine(startTime: Double, carrier: Double, modulator: Double): Unit = {
+      fmSineNote(startTime, duration, carrier, modulator, sineModAmount, sineAmpLow, () => lineControl(0.5, 0.7),
+        spread = 0.4,
+        audio => bandRejectFilter(audio, staticControl(filter1._1), staticControl(filter1._2)))
+
+      fmSineNote(startTime , duration, carrier, modulator, sineModAmount, sineAmpHigh, () => lineControl(0.3, 0.9),
+        spread = 0.4,
+        audio => bandRejectFilter(audio, staticControl(filter2._1), staticControl(filter2._2)))
+
+      fmSineNote(startTime, duration, carrier, modulator, sineModAmount, sineAmpLow, () => lineControl(-0.3, -0.7),
+        spread = 0.4,
+        audio => bandRejectFilter(audio, staticControl(filter3._1), staticControl(filter3._2)))
+
+      fmSineNote(startTime , duration, carrier, modulator, sineModAmount, sineAmpHigh, () => lineControl(-0.3, -0.9),
+        spread = 0.4,
+        audio => bandRejectFilter(audio, staticControl(filter4._1), staticControl(filter4._2)))
+    }
 
     // 8 10 6 4
     // 7 5 9 11
-    fmSineNote(times.head, duration, theme._4(8), theme._4(8) * theme._3, sineModAmount, sineAmp, () => lineControl(0.6, -0.6))
-    fmSineNote(times(1), duration, theme._4(10), theme._4(10) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6))
-    fmSineNote(times(2), duration, theme._4(6), theme._4(6) * theme._3, sineModAmount, sineAmp, () => lineControl(0.6, -0.6))
-    fmSineNote(times(3), duration, theme._4(4), theme._4(4) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6))
-    fmSineNote(times(4), duration, theme._4(7), theme._4(7) * theme._3, sineModAmount, sineAmp, () => lineControl(0.6, -0.6))
-    fmSineNote(times(5), duration, theme._4(5), theme._4(5) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6))
-    fmSineNote(times(6), duration, theme._4(9), theme._4(9) * theme._3, sineModAmount, sineAmp, () => lineControl(0.6, -0.6))
-    fmSineNote(times(7), duration, theme._4(11), theme._4(11) * theme._3, sineModAmount, sineAmp, () => lineControl(-0.6, 0.6))
+    playSine(times.head, theme._4(8), theme._4(8) * theme._3)
+    playSine(times(1), theme._4(10), theme._4(10) * theme._3)
+    playSine(times(2), theme._4(6), theme._4(6) * theme._3)
+    playSine(times(3), theme._4(4), theme._4(4) * theme._3)
+    playSine(times(4), theme._4(7), theme._4(7) * theme._3)
+    playSine(times(5), theme._4(5), theme._4(5) * theme._3)
+    playSine(times(6), theme._4(9), theme._4(9) * theme._3)
+    playSine(times(7), theme._4(11), theme._4(11) * theme._3)
 
     val bowl = (startTime: Double) => {
       bowlNote(startTime + 0.05, 0.5, -0.4, 1)
@@ -248,7 +342,7 @@ object ModuleMusic5 {
       bowlNote(startTime + 0.6, 1.01, 0.7, 1)
       bowlNote(startTime + 0.6, 0.99, -0.5, 1)
     }
-    
+
     val bowlTimes = Seq(times(2), times(7))
     bowlTimes.foreach(bowl(_))
 
