@@ -225,22 +225,22 @@ object ModuleMusic5 {
       fmSineNote(startTime, duration, carrier, modulator, sineModAmount(attack), sineAmpLow(attack), () => lineControl(pan._1, pan._2),
         spread = 0.2,
         audio => lowPassFilter(bandRejectFilter(audio, staticControl(filter1._1), staticControl(filter1._2)).addAction(TAIL_ACTION), staticControl(6000)),
-        outputBus = 12)
+        outputBus = 18)
 
       fmSineNote(startTime , duration, carrier, modulator, sineModAmount(attack), sineAmpHigh(attack), () => lineControl(pan._1, pan._2),
         spread = 0.2,
         audio => lowPassFilter(bandRejectFilter(audio, staticControl(filter2._1), staticControl(filter2._2)).addAction(TAIL_ACTION), staticControl(6000)),
-        outputBus = 14)
+        outputBus = 20)
 
       fmSineNote(startTime, duration, carrier, modulator, sineModAmount(attack), sineAmpLow(attack), () => lineControl(pan._1, pan._2),
         spread = 0.2,
         audio => lowPassFilter(bandRejectFilter(audio, staticControl(filter3._1), staticControl(filter3._2)).addAction(TAIL_ACTION), staticControl(6000)),
-        outputBus = 16)
+        outputBus = 22)
 
       fmSineNote(startTime , duration, carrier, modulator, sineModAmount(attack), sineAmpHigh(attack), () => lineControl(pan._1, pan._2),
         spread = 0.2,
         audio => lowPassFilter(bandRejectFilter(audio, staticControl(filter4._1), staticControl(filter4._2)).addAction(TAIL_ACTION), staticControl(6000)),
-        outputBus = 18)
+        outputBus = 24)
     }
 
     playSine(times.head, theme._4(4), theme._4(4) * theme._3, 0.3, (-0.6, 0.6))
@@ -256,13 +256,13 @@ object ModuleMusic5 {
     println(s"times $times")
 
     val bowl = (startTime: Double) => {
-      bowlNote(startTime + 0.05, 1, -0.4, 0.5, outputBus = 20)
-      bowlNote(startTime + 0.05, 1.01, 0.7, 0.5, outputBus = 22)
-      bowlNote(startTime + 0.05, 0.99, -0.5, 0.5, outputBus = 24)
+      bowlNote(startTime + 0.05, 1, -0.4, 0.5, outputBus = 26)
+      bowlNote(startTime + 0.05, 1.01, 0.7, 0.5, outputBus = 28)
+      bowlNote(startTime + 0.05, 0.99, -0.5, 0.5, outputBus = 30)
 
-      bowlNote(startTime + 0.6, 0.5, -0.4, 0.5, outputBus = 20)
-      bowlNote(startTime + 0.6, 0.51, 0.7, 0.5, outputBus = 22)
-      bowlNote(startTime + 0.6, 0.49, -0.5, 0.5, outputBus = 24)
+      bowlNote(startTime + 0.6, 0.5, -0.4, 0.5, outputBus = 26)
+      bowlNote(startTime + 0.6, 0.51, 0.7, 0.5, outputBus = 28)
+      bowlNote(startTime + 0.6, 0.49, -0.5, 0.5, outputBus = 30)
     }
 
     val bowlTimes = Seq(times(2), times(5))
@@ -313,22 +313,22 @@ object ModuleMusic5 {
       fmSineNote(startTime, duration, carrier, modulator, sineModAmount(attack), sineAmpLow(attack), () => lineControl(pan._1, pan._2),
         spread = 0.2,
         audio => lowPassFilter(bandRejectFilter(audio, staticControl(filter1._1), staticControl(filter1._2)).addAction(TAIL_ACTION), staticControl(6000)),
-        outputBus = 12)
+        outputBus = 18)
 
       fmSineNote(startTime , duration, carrier, modulator, sineModAmount(attack), sineAmpHigh(attack), () => lineControl(pan._1, pan._2),
         spread = 0.2,
         audio => lowPassFilter(bandRejectFilter(audio, staticControl(filter2._1), staticControl(filter2._2)).addAction(TAIL_ACTION), staticControl(6000)),
-        outputBus = 14)
+        outputBus = 20)
 
       fmSineNote(startTime, duration, carrier, modulator, sineModAmount(attack), sineAmpLow(attack), () => lineControl(pan._1, pan._2),
         spread = 0.2,
         audio => lowPassFilter(bandRejectFilter(audio, staticControl(filter3._1), staticControl(filter3._2)).addAction(TAIL_ACTION), staticControl(6000)),
-        outputBus = 16)
+        outputBus = 22)
 
       fmSineNote(startTime , duration, carrier, modulator, sineModAmount(attack), sineAmpHigh(attack), () => lineControl(pan._1, pan._2),
         spread = 0.2,
         audio => lowPassFilter(bandRejectFilter(audio, staticControl(filter4._1), staticControl(filter4._2)).addAction(TAIL_ACTION), staticControl(6000)),
-        outputBus = 18)
+        outputBus = 24)
     }
 
     // 8 10 6 4
@@ -343,13 +343,13 @@ object ModuleMusic5 {
     playSine(times(7), theme._4(11), theme._4(11) * theme._3, 0.6, (0.6, -0.6))
 
     val bowl = (startTime: Double) => {
-      bowlNote(startTime + 0.05, 0.5, -0.4, 0.5, outputBus = 20)
-      bowlNote(startTime + 0.05, 0.51, 0.7, 0.5, outputBus = 22)
-      bowlNote(startTime + 0.05, 0.49, -0.5, 0.5, outputBus = 24)
+      bowlNote(startTime + 0.05, 0.5, -0.4, 0.5, outputBus = 26)
+      bowlNote(startTime + 0.05, 0.51, 0.7, 0.5, outputBus = 28)
+      bowlNote(startTime + 0.05, 0.49, -0.5, 0.5, outputBus = 30)
 
-      bowlNote(startTime + 0.6, 1, -0.4, 0.5, outputBus = 20)
-      bowlNote(startTime + 0.6, 1.01, 0.7, 0.5, outputBus = 22)
-      bowlNote(startTime + 0.6, 0.99, -0.5, 0.5, outputBus = 24)
+      bowlNote(startTime + 0.6, 1, -0.4, 0.5, outputBus = 26)
+      bowlNote(startTime + 0.6, 1.01, 0.7, 0.5, outputBus = 28)
+      bowlNote(startTime + 0.6, 0.99, -0.5, 0.5, outputBus = 30)
     }
 
     val bowlTimes = Seq(times(2), times(7))
@@ -420,14 +420,14 @@ object ModuleMusic5 {
         percAmp(0.6),
         () => lineControl(-0.4, 0.4),
         filteredSoundLow,
-        outputBus = 0)
+        outputBus = 6)
 
       fmSawNote(startTime + 0.1, 1, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
         percModAmount,
         percAmp(0.6),
         () => lineControl(0.4, -0.4),
         filteredSoundLow,
-        outputBus = 0)
+        outputBus = 8)
 
     }
 
@@ -472,21 +472,21 @@ object ModuleMusic5 {
         percAmp(0.6),
         () => lineControl(-0.5, -0.6),
         filteredSoundLow,
-        outputBus = 0)
+        outputBus = 6)
 
       fmSawNote(startTime + 0.075, 1, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
         sineModAmount,
         sineAmp(0.6),
         () => lineControl(-0.5, 0.5),
         filteredSoundLow,
-        outputBus = 2)
+        outputBus = 8)
 
       fmSawNote(startTime + 0.25, 2, lowThird * 1.02, lowThird * theme._3 * 0.98,
         percModAmount,
         percAmp(0.6),
         () => lineControl(0.5, 0.6),
         filteredSoundLow,
-        outputBus = 4)
+        outputBus = 10)
     }
 
     val twoLongNote = (startTime: Double) => {
@@ -520,28 +520,28 @@ object ModuleMusic5 {
         sineAmp(0.6),
         () => lineControl(0.4, -0.3),
         filteredSoundLow,
-        outputBus = 0)
+        outputBus = 6)
 
       fmSawNote(startTime + 0.2, 2, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
         sineModAmount,
         sineAmp(0.6),
         () => lineControl(-0.4, 0.3),
         filteredSoundLow,
-        outputBus = 2)
+        outputBus = 8)
     }
 
     val table = (startTime: Double) => {
-      tableNote(startTime + 0.1, 0.5, 0.3, 0.5, outputBus = 6)
-      tableNote(startTime + 0.1, 0.51, -0.9, 0.5, outputBus = 8)
-      tableNote(startTime + 0.1, 0.49, 0.7, 0.5, outputBus = 10)
+      tableNote(startTime + 0.1, 0.5, 0.3, 0.5, outputBus = 12)
+      tableNote(startTime + 0.1, 0.51, -0.9, 0.5, outputBus = 14)
+      tableNote(startTime + 0.1, 0.49, 0.7, 0.5, outputBus = 16)
 
-      tableNote(startTime + 0.7, 1.0, 0.3, 0.5, outputBus = 6)
-      tableNote(startTime + 0.7, 1.01, -0.9, 0.5, outputBus = 8)
-      tableNote(startTime + 0.7, 0.99, 0.7, 0.5, outputBus = 10)
+      tableNote(startTime + 0.7, 1.0, 0.3, 0.5, outputBus = 12)
+      tableNote(startTime + 0.7, 1.01, -0.9, 0.5, outputBus = 14)
+      tableNote(startTime + 0.7, 0.99, 0.7, 0.5, outputBus = 16)
 
-      tableNote(startTime + 0.00, 0.10, 0.3, 0.5, outputBus = 6)
-      tableNote(startTime + 0.00, 0.11, -0.9, 0.5, outputBus = 8)
-      tableNote(startTime + 0.00, 0.09, 0.7, 0.5, outputBus = 10)
+      tableNote(startTime + 0.00, 0.10, 0.3, 0.5, outputBus = 12)
+      tableNote(startTime + 0.00, 0.11, -0.9, 0.5, outputBus = 14)
+      tableNote(startTime + 0.00, 0.09, 0.7, 0.5, outputBus = 16)
     }
 
     val pulse = theme._4(3)
@@ -623,14 +623,14 @@ object ModuleMusic5 {
         percAmp(0.6),
         () => lineControl(-0.4, 0.4),
         filteredSoundLow,
-        outputBus = 0)
+        outputBus = 6)
 
       fmSawNote(startTime + 0.1, 1, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
         sineModAmount,
         sineAmp(0.6),
         () => lineControl(0.4, -0.4),
         filteredSoundLow,
-        outputBus = 2)
+        outputBus = 8)
     }
 
     val threeShortNote = (startTime: Double) => {
@@ -674,21 +674,21 @@ object ModuleMusic5 {
         percAmp(0.6),
         () => lineControl(-0.5, -0.6),
         filteredSoundLow,
-        outputBus = 0)
+        outputBus = 6)
 
       fmSawNote(startTime + 0.075, 1, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
         sineModAmount,
         sineAmp(0.6),
         () => lineControl(-0.5, 0.5),
         filteredSoundLow,
-        outputBus = 2)
+        outputBus = 8)
 
       fmSawNote(startTime + 0.25, 2, lowThird * 1.02, lowThird * theme._3 * 0.98,
         percModAmount,
         percAmp(0.6),
         () => lineControl(0.5, 0.6),
         filteredSoundLow,
-        outputBus = 4)
+        outputBus = 10)
     }
 
     val twoLongNote = (startTime: Double) => {
@@ -722,28 +722,28 @@ object ModuleMusic5 {
         sineAmp(0.6),
         () => lineControl(0.5, -0.4),
         filteredSoundLow,
-        outputBus = 0)
+        outputBus = 6)
 
       fmSawNote(startTime + 0.2, 2, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
         sineModAmount,
         sineAmp(0.6),
         () => lineControl(-0.5, 0.4),
         filteredSoundLow,
-        outputBus = 2)
+        outputBus = 8)
     }
 
     val table = (startTime: Double) => {
-      tableNote(startTime + 0.1, 1.0, 0.3, 0.5, 6)
-      tableNote(startTime + 0.1, 1.01, -0.9, 0.5, 8)
-      tableNote(startTime + 0.1, 0.99, 0.7, 0.5, 10)
+      tableNote(startTime + 0.1, 1.0, 0.3, 0.5, 12)
+      tableNote(startTime + 0.1, 1.01, -0.9, 0.5, 14)
+      tableNote(startTime + 0.1, 0.99, 0.7, 0.5, 16)
 
-      tableNote(startTime + 0.7, 0.5, 0.3, 0.5, 6)
-      tableNote(startTime + 0.7, 0.51, -0.9, 0.5, 8)
-      tableNote(startTime + 0.7, 0.49, 0.7, 0.5, 10)
+      tableNote(startTime + 0.7, 0.5, 0.3, 0.5, 12)
+      tableNote(startTime + 0.7, 0.51, -0.9, 0.5, 14)
+      tableNote(startTime + 0.7, 0.49, 0.7, 0.5, 16)
 
-      tableNote(startTime + 0.00, 0.10, 0.3, 0.5, 6)
-      tableNote(startTime + 0.00, 0.11, -0.9, 1.0, 8)
-      tableNote(startTime + 0.00, 0.09, 0.7, 0.5, 10)
+      tableNote(startTime + 0.00, 0.10, 0.3, 0.5, 12)
+      tableNote(startTime + 0.00, 0.11, -0.9, 1.0, 14)
+      tableNote(startTime + 0.00, 0.09, 0.7, 0.5, 16)
     }
 
     val pulse = theme._4(3)
@@ -824,14 +824,14 @@ object ModuleMusic5 {
         sineAmp(0.6),
         () => lineControl(0.4, -0.4),
         filteredSoundLow,
-        outputBus = 0)
+        outputBus = 6)
 
       fmSawNote(startTime + 0.1, 3, lowSecond, lowSecond * theme._3,
         percModAmount,
         percAmp(0.6),
         () => lineControl(-0.4, 0.4),
         filteredSoundLow,
-        outputBus = 2)
+        outputBus = 8)
 
     }
 
@@ -876,21 +876,21 @@ object ModuleMusic5 {
         percAmp(0.6),
         () => lineControl(0.5, 0.6),
         filteredSoundLow,
-        outputBus = 0)
+        outputBus = 6)
 
       fmSawNote(startTime + 0.075, 1, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
         sineModAmount,
         sineAmp(0.6),
         () => lineControl(-0.5, 0.5),
         filteredSoundLow,
-        outputBus = 2)
+        outputBus = 8)
 
       fmSawNote(startTime + 0.25, 3, lowThird, lowThird * theme._3,
         percModAmount,
         percAmp(0.6),
         () => lineControl(-0.5, -0.6),
         filteredSoundLow,
-        outputBus = 4)
+        outputBus = 10)
     }
 
     val twoLongNote = (startTime: Double) => {
@@ -924,28 +924,28 @@ object ModuleMusic5 {
         sineAmp(0.6),
         () => lineControl(-0.5, 0.4),
         filteredSoundLow,
-        outputBus = 0)
+        outputBus = 6)
 
       fmSawNote(startTime + 0.2, 2, lowSecond, lowSecond * theme._3,
         sineModAmount,
         sineAmp(0.6),
         () => lineControl(0.5, -0.4),
         filteredSoundLow,
-        2)
+        8)
     }
 
     val table = (startTime: Double) => {
-      tableNote(startTime + 0.1, 1.0, 0.3, 0.5, 6)
-      tableNote(startTime + 0.1, 1.01, -0.9, 0.5, 8)
-      tableNote(startTime + 0.1, 0.99, 0.7, 0.5, 10)
+      tableNote(startTime + 0.1, 1.0, 0.3, 0.5, 12)
+      tableNote(startTime + 0.1, 1.01, -0.9, 0.5, 14)
+      tableNote(startTime + 0.1, 0.99, 0.7, 0.5, 16)
 
-      tableNote(startTime + 0.7, 0.5, 0.3, 0.5, 6)
-      tableNote(startTime + 0.7, 0.51, -0.9, 0.5, 8)
-      tableNote(startTime + 0.7, 0.49, 0.7, 0.5, 10)
+      tableNote(startTime + 0.7, 0.5, 0.3, 0.5, 12)
+      tableNote(startTime + 0.7, 0.51, -0.9, 0.5, 14)
+      tableNote(startTime + 0.7, 0.49, 0.7, 0.5, 16)
 
-      tableNote(startTime + 0.00, 0.10, 0.3, 0.5, 6)
-      tableNote(startTime + 0.00, 0.11, -0.9, 0.5, 8)
-      tableNote(startTime + 0.00, 0.09, 0.7, 0.5, 10)
+      tableNote(startTime + 0.00, 0.10, 0.3, 0.5, 12)
+      tableNote(startTime + 0.00, 0.11, -0.9, 0.5, 14)
+      tableNote(startTime + 0.00, 0.09, 0.7, 0.5, 16)
     }
 
     val pulse = theme._4(3)
@@ -1024,14 +1024,14 @@ object ModuleMusic5 {
           percAmp(0.6),
           () => lineControl(-0.4, 0.4),
           filteredSoundLow,
-          outputBus = 0)
+          outputBus = 6)
 
         fmSawNote(startTime + 0.1, 1, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
           sineModAmount,
           sineAmp(0.6),
           () => lineControl(0.4, -0.4),
           filteredSoundLow,
-          outputBus = 2)
+          outputBus = 8)
       }
 
       val twoLongNote = (startTime: Double) => {
@@ -1066,28 +1066,28 @@ object ModuleMusic5 {
           sineAmp(0.6),
           () => lineControl(0.5, -0.4),
           filteredSoundLow,
-          outputBus = 0)
+          outputBus = 6)
 
         fmSawNote(startTime + 0.2, 2, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
           sineModAmount,
           sineAmp(0.6),
           () => lineControl(-0.5, 0.4),
           filteredSoundLow,
-          outputBus = 2)
+          outputBus = 8)
       }
 
       val table = (startTime: Double) => {
-        tableNote(startTime + 0.1, 0.5, 0.3, 0.5, 6)
-        tableNote(startTime + 0.1, 0.51, -0.9, 0.5, 8)
-        tableNote(startTime + 0.1, 0.49, 0.7, 0.5, 10)
+        tableNote(startTime + 0.1, 0.5, 0.3, 0.5, 12)
+        tableNote(startTime + 0.1, 0.51, -0.9, 0.5, 14)
+        tableNote(startTime + 0.1, 0.49, 0.7, 0.5, 16)
 
-        tableNote(startTime + 0.7, 1.0, 0.3, 0.5, 6)
-        tableNote(startTime + 0.7, 1.01, -0.9, 0.5, 8)
-        tableNote(startTime + 0.7, 0.99, 0.7, 0.5, 10)
+        tableNote(startTime + 0.7, 1.0, 0.3, 0.5, 12)
+        tableNote(startTime + 0.7, 1.01, -0.9, 0.5, 14)
+        tableNote(startTime + 0.7, 0.99, 0.7, 0.5, 16)
 
-        tableNote(startTime + 0.00, 0.10, 0.3, 0.5, 6)
-        tableNote(startTime + 0.00, 0.11, -0.9, 0.5, 8)
-        tableNote(startTime + 0.00, 0.09, 0.7, 0.5, 10)
+        tableNote(startTime + 0.00, 0.10, 0.3, 0.5, 12)
+        tableNote(startTime + 0.00, 0.11, -0.9, 0.5, 14)
+        tableNote(startTime + 0.00, 0.09, 0.7, 0.5, 16)
       }
 
       val pulse = theme._4(3)
