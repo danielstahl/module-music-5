@@ -18,7 +18,7 @@ Maybe mix with real samples.
 object ModuleMusic5 {
   implicit val client: SuperColliderClient = SuperColliderClient()
   val SYNTH_DIR = "/Users/danielstahl/Documents/Projects/soundmining-modular/src/main/sc/synths"
-  val SOUND_DIR = "/Users/danielstahl/Documents/Music/Pieces/Module Music/module-music-5/sounds/module-music-5_sounds"
+  val SOUND_DIR = "/Users/danielstahl/Documents/Music/Pieces/Module Music/Module Music 5/sounds/module-music-5_sounds"
 
   val BOWL1 = "bowl1"
   val TABLE1 = "table1"
@@ -28,7 +28,7 @@ object ModuleMusic5 {
       BOWL1 -> SoundPlay(s"$SOUND_DIR/bowl-1.flac", 0.134, 5.254),
       TABLE1 -> SoundPlay(s"$SOUND_DIR/table-1.flac", 0.0, 0.838),
     ),
-    numberOfOutputBuses = 64)
+    numberOfOutputBuses = 2)
 
   def init(): Unit = {
     println("Starting up SuperCollider client")
@@ -212,34 +212,34 @@ object ModuleMusic5 {
 
     val duration = makeTime(pulse * 55)
 
-    val sineModAmount = (attack: Double) => () => relativePercControl(100, 1000, attack, Right(Instrument.SINE))
+    val sineModAmount = (attack: Double) => () => relativePercControl(100, 2000, attack, Left(8))
     val sineAmpLow = (attack: Double) => () => relativePercControl(0.001, 0.2, attack, Right(Instrument.SINE))
     val sineAmpHigh = (attack: Double) => () => relativePercControl(0.001, 0.8, attack, Right(Instrument.SINE))
 
-    val filter1: (Double, Double) = (200, 10)
-    val filter2: (Double, Double) = (3000, 10)
-    val filter3: (Double, Double) = (700, 10)
-    val filter4: (Double, Double) = (1000, 10)
+    val filter1: (Double, Double) = (200, 5)
+    val filter2: (Double, Double) = (3000, 15)
+    val filter3: (Double, Double) = (700, 12)
+    val filter4: (Double, Double) = (1000, 14)
 
     def playSine(startTime: Double, carrier: Double, modulator: Double, attack: Double, pan: (Double, Double)): Unit = {
       fmSineNote(startTime, duration, carrier, modulator, sineModAmount(attack), sineAmpLow(attack), () => lineControl(pan._1, pan._2),
         spread = 0.2,
-        audio => bandRejectFilter(audio, staticControl(filter1._1), staticControl(filter1._2)),
+        audio => lowPassFilter(bandRejectFilter(audio, staticControl(filter1._1), staticControl(filter1._2)).addAction(TAIL_ACTION), staticControl(6000)),
         outputBus = 12)
 
       fmSineNote(startTime , duration, carrier, modulator, sineModAmount(attack), sineAmpHigh(attack), () => lineControl(pan._1, pan._2),
         spread = 0.2,
-        audio => bandRejectFilter(audio, staticControl(filter2._1), staticControl(filter2._2)),
+        audio => lowPassFilter(bandRejectFilter(audio, staticControl(filter2._1), staticControl(filter2._2)).addAction(TAIL_ACTION), staticControl(6000)),
         outputBus = 14)
 
       fmSineNote(startTime, duration, carrier, modulator, sineModAmount(attack), sineAmpLow(attack), () => lineControl(pan._1, pan._2),
         spread = 0.2,
-        audio => bandRejectFilter(audio, staticControl(filter3._1), staticControl(filter3._2)),
+        audio => lowPassFilter(bandRejectFilter(audio, staticControl(filter3._1), staticControl(filter3._2)).addAction(TAIL_ACTION), staticControl(6000)),
         outputBus = 16)
 
       fmSineNote(startTime , duration, carrier, modulator, sineModAmount(attack), sineAmpHigh(attack), () => lineControl(pan._1, pan._2),
         spread = 0.2,
-        audio => bandRejectFilter(audio, staticControl(filter4._1), staticControl(filter4._2)),
+        audio => lowPassFilter(bandRejectFilter(audio, staticControl(filter4._1), staticControl(filter4._2)).addAction(TAIL_ACTION), staticControl(6000)),
         outputBus = 18)
     }
 
@@ -300,34 +300,34 @@ object ModuleMusic5 {
     println(s"duration $duration")
     println(s"times $times")
 
-    val sineModAmount = (attack: Double) => () => relativePercControl(100, 1000, attack, Right(Instrument.SINE))
+    val sineModAmount = (attack: Double) => () => relativePercControl(100, 2000, attack, Left(8))
     val sineAmpLow = (attack: Double) => () => relativePercControl(0.001, 0.2, attack, Right(Instrument.SINE))
     val sineAmpHigh = (attack: Double) => () => relativePercControl(0.001, 0.8, attack, Right(Instrument.SINE))
 
-    val filter1: (Double, Double) = (200, 10)
-    val filter2: (Double, Double) = (3000, 10)
-    val filter3: (Double, Double) = (700, 10)
-    val filter4: (Double, Double) = (1000, 10)
+    val filter1: (Double, Double) = (200, 5)
+    val filter2: (Double, Double) = (3000, 15)
+    val filter3: (Double, Double) = (700, 12)
+    val filter4: (Double, Double) = (1000, 14)
 
     def playSine(startTime: Double, carrier: Double, modulator: Double, attack: Double, pan: (Double, Double)): Unit = {
       fmSineNote(startTime, duration, carrier, modulator, sineModAmount(attack), sineAmpLow(attack), () => lineControl(pan._1, pan._2),
         spread = 0.2,
-        audio => bandRejectFilter(audio, staticControl(filter1._1), staticControl(filter1._2)),
+        audio => lowPassFilter(bandRejectFilter(audio, staticControl(filter1._1), staticControl(filter1._2)).addAction(TAIL_ACTION), staticControl(6000)),
         outputBus = 12)
 
       fmSineNote(startTime , duration, carrier, modulator, sineModAmount(attack), sineAmpHigh(attack), () => lineControl(pan._1, pan._2),
         spread = 0.2,
-        audio => bandRejectFilter(audio, staticControl(filter2._1), staticControl(filter2._2)),
+        audio => lowPassFilter(bandRejectFilter(audio, staticControl(filter2._1), staticControl(filter2._2)).addAction(TAIL_ACTION), staticControl(6000)),
         outputBus = 14)
 
       fmSineNote(startTime, duration, carrier, modulator, sineModAmount(attack), sineAmpLow(attack), () => lineControl(pan._1, pan._2),
         spread = 0.2,
-        audio => bandRejectFilter(audio, staticControl(filter3._1), staticControl(filter3._2)),
+        audio => lowPassFilter(bandRejectFilter(audio, staticControl(filter3._1), staticControl(filter3._2)).addAction(TAIL_ACTION), staticControl(6000)),
         outputBus = 16)
 
       fmSineNote(startTime , duration, carrier, modulator, sineModAmount(attack), sineAmpHigh(attack), () => lineControl(pan._1, pan._2),
         spread = 0.2,
-        audio => bandRejectFilter(audio, staticControl(filter4._1), staticControl(filter4._2)),
+        audio => lowPassFilter(bandRejectFilter(audio, staticControl(filter4._1), staticControl(filter4._2)).addAction(TAIL_ACTION), staticControl(6000)),
         outputBus = 18)
     }
 
@@ -382,10 +382,11 @@ object ModuleMusic5 {
 
     val percModAmount = () => relativePercControl(300, 3000, 0.001, Left(-8))
     val sineModAmount = () => relativePercControl(300, 3000, 0.3, Right(Instrument.SINE))
-    val percAmp = () => relativePercControl(0.001, 0.4, 0.001, Left(-8))
-    val sineAmp = () => relativePercControl(0.001, 0.4, 0.3, Right(Instrument.SINE))
+    val percAmp = (peak: Double) => () => relativePercControl(0.001, peak, 0.001, Left(-8))
+    val sineAmp = (peak: Double) => () => relativePercControl(0.001, peak, 0.3, Right(Instrument.SINE))
 
-    val filteredSound = (audio: AudioInstrument) => bandRejectFilter(audio, staticControl(400), staticControl(2))
+    val filteredSound = (audio: AudioInstrument) =>
+      lowPassFilter(bandRejectFilter(audio, staticControl(400), staticControl(2)).addAction(TAIL_ACTION), staticControl(8000))
 
     val twoShortNote = (startTime: Double) => {
       val (first, second) = (2, 3)
@@ -393,62 +394,139 @@ object ModuleMusic5 {
       //val second: Int = 3
       fmSawNote(startTime, 3, theme._4(first), theme._4(first) * theme._3,
         percModAmount,
-        percAmp,
+        percAmp(0.4),
         () => lineControl(-0.2, 0.2),
         filteredSound,
         outputBus = 0)
 
       fmSawNote(startTime + 0.1, 1, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
         sineModAmount,
-        sineAmp,
+        sineAmp(0.4),
         () => lineControl(0.2, -0.2),
         filteredSound,
         outputBus = 2)
+
+      val invertedFirst = theme._4(first) / (theme._4(first) * theme._3)
+      val lowFirst = theme._4(first) * invertedFirst * invertedFirst * invertedFirst
+
+      val invSecond = theme._4(second) / (theme._4(second) * theme._3)
+      val lowSecond = theme._4(second) * invSecond * invSecond * invSecond
+
+      val filteredSoundLow = (audio: AudioInstrument) =>
+        lowPassFilter(audio, staticControl(75))
+
+      fmSawNote(startTime, 3, lowFirst, lowFirst * theme._3,
+        percModAmount,
+        percAmp(0.6),
+        () => lineControl(-0.4, 0.4),
+        filteredSoundLow,
+        outputBus = 0)
+
+      fmSawNote(startTime + 0.1, 1, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
+        percModAmount,
+        percAmp(0.6),
+        () => lineControl(0.4, -0.4),
+        filteredSoundLow,
+        outputBus = 0)
+
     }
 
     val threeShortNote = (startTime: Double) => {
       val (first, second, third) = (3, 2, 3)
-      //val first: Int = 3
-      //val second: Int = 2
-      //val third: Int = 3
+
       fmSawNote(startTime, 3, theme._4(first), theme._4(first) * theme._3,
         percModAmount,
-        percAmp,
+        percAmp(0.4),
         () => lineControl(-0.3, -0.4),
         filteredSound,
         outputBus = 0)
 
       fmSawNote(startTime + 0.075, 1, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
         sineModAmount,
-        sineAmp,
+        sineAmp(0.4),
         () => lineControl(-0.3, 0.3),
         filteredSound,
         outputBus = 2)
 
       fmSawNote(startTime + 0.25, 2, theme._4(third) * 1.02, theme._4(third) * theme._3 * 0.98,
         percModAmount,
-        percAmp,
+        percAmp(0.4),
         () => lineControl(0.3, 0.4),
         filteredSound,
+        outputBus = 4)
+
+      val invFirst = theme._4(first) / (theme._4(first) * theme._3)
+      val lowFirst = theme._4(first) * invFirst * invFirst * invFirst
+
+      val invSecond = theme._4(second) / (theme._4(second) * theme._3)
+      val lowSecond = theme._4(second) * invSecond * invSecond * invSecond
+
+      val invThird = theme._4(third) / (theme._4(third) * theme._3)
+      val lowThird = theme._4(second) * invThird * invThird * invThird
+
+      val filteredSoundLow = (audio: AudioInstrument) =>
+        lowPassFilter(audio, staticControl(75))
+
+      fmSawNote(startTime, 3, lowFirst, lowFirst * theme._3,
+        percModAmount,
+        percAmp(0.6),
+        () => lineControl(-0.5, -0.6),
+        filteredSoundLow,
+        outputBus = 0)
+
+      fmSawNote(startTime + 0.075, 1, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
+        sineModAmount,
+        sineAmp(0.6),
+        () => lineControl(-0.5, 0.5),
+        filteredSoundLow,
+        outputBus = 2)
+
+      fmSawNote(startTime + 0.25, 2, lowThird * 1.02, lowThird * theme._3 * 0.98,
+        percModAmount,
+        percAmp(0.6),
+        () => lineControl(0.5, 0.6),
+        filteredSoundLow,
         outputBus = 4)
     }
 
     val twoLongNote = (startTime: Double) => {
-      //val first: Int = 2
-      //val second: Int = 3
+
       val (first, second) = (2, 3)
       fmSawNote(startTime, 2, theme._4(first), theme._4(first) * theme._3,
         sineModAmount,
-        sineAmp,
+        sineAmp(0.4),
         () => lineControl(0.3, -0.2),
         filteredSound,
         outputBus = 0)
 
       fmSawNote(startTime + 0.2, 2, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
         sineModAmount,
-        sineAmp,
+        sineAmp(0.4),
         () => lineControl(-0.3, 0.2),
         filteredSound,
+        outputBus = 2)
+
+      val invertedFirst = theme._4(first) / (theme._4(first) * theme._3)
+      val lowFirst = theme._4(first) * invertedFirst * invertedFirst * invertedFirst
+
+      val invSecond = theme._4(second) / (theme._4(second) * theme._3)
+      val lowSecond = theme._4(second) * invSecond * invSecond * invSecond
+
+      val filteredSoundLow = (audio: AudioInstrument) =>
+        lowPassFilter(audio, staticControl(75))
+
+      fmSawNote(startTime, 2, lowFirst, lowFirst * theme._3,
+        sineModAmount,
+        sineAmp(0.6),
+        () => lineControl(0.4, -0.3),
+        filteredSoundLow,
+        outputBus = 0)
+
+      fmSawNote(startTime + 0.2, 2, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
+        sineModAmount,
+        sineAmp(0.6),
+        () => lineControl(-0.4, 0.3),
+        filteredSoundLow,
         outputBus = 2)
     }
 
@@ -510,72 +588,147 @@ object ModuleMusic5 {
 
     val percModAmount = () => relativePercControl(300, 3000, 0.001, Left(-8))
     val sineModAmount = () => relativePercControl(300, 3000, 0.3, Right(Instrument.SINE))
-    val percAmp = () => relativePercControl(0.001, 0.4, 0.001, Left(-8))
-    val sineAmp = () => relativePercControl(0.001, 0.4, 0.3, Right(Instrument.SINE))
+    val percAmp = (peak: Double) => () => relativePercControl(0.001, peak, 0.001, Left(-8))
+    val sineAmp = (peak: Double) => () => relativePercControl(0.001, peak, 0.3, Right(Instrument.SINE))
     val filteredSound = (audio: AudioInstrument) => bandRejectFilter(audio, staticControl(400), staticControl(2))
 
     val twoShortNote = (startTime: Double) => {
       val (first, second) = (3, 2)
-      //val first: Int = 2
-      //val second: Int = 3
+
       fmSawNote(startTime, 3, theme._4(first), theme._4(first) * theme._3,
         percModAmount,
-        percAmp,
+        percAmp(0.4),
         () => lineControl(-0.2, 0.2),
         filteredSound,
         outputBus = 0)
 
       fmSawNote(startTime + 0.1, 1, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
         sineModAmount,
-        sineAmp,
+        sineAmp(0.4),
         () => lineControl(0.2, -0.2),
         filteredSound,
+        outputBus = 2)
+
+      val invertedFirst = theme._4(first) / (theme._4(first) * theme._3)
+      val lowFirst = theme._4(first) * invertedFirst * invertedFirst * invertedFirst
+
+      val invSecond = theme._4(second) / (theme._4(second) * theme._3)
+      val lowSecond = theme._4(second) * invSecond * invSecond * invSecond
+
+      val filteredSoundLow = (audio: AudioInstrument) =>
+        lowPassFilter(audio, staticControl(75))
+
+      fmSawNote(startTime, 3, lowFirst, lowFirst * theme._3,
+        percModAmount,
+        percAmp(0.6),
+        () => lineControl(-0.4, 0.4),
+        filteredSoundLow,
+        outputBus = 0)
+
+      fmSawNote(startTime + 0.1, 1, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
+        sineModAmount,
+        sineAmp(0.6),
+        () => lineControl(0.4, -0.4),
+        filteredSoundLow,
         outputBus = 2)
     }
 
     val threeShortNote = (startTime: Double) => {
       val (first, second, third) = (2, 3, 2)
-      //val first: Int = 3
-      //val second: Int = 2
-      //val third: Int = 3
+
       fmSawNote(startTime, 3, theme._4(first), theme._4(first) * theme._3,
         percModAmount,
-        percAmp,
+        percAmp(0.4),
         () => lineControl(-0.3, -0.4),
         filteredSound,
         outputBus = 0)
 
       fmSawNote(startTime + 0.075, 1, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
         sineModAmount,
-        sineAmp,
+        sineAmp(0.4),
         () => lineControl(-0.3, 0.3),
         filteredSound,
         outputBus = 2)
 
       fmSawNote(startTime + 0.25, 2, theme._4(third) * 1.02, theme._4(third) * theme._3 * 0.98,
         percModAmount,
-        percAmp,
+        percAmp(0.4),
         () => lineControl(0.3, 0.4),
         filteredSound,
+        outputBus = 4)
+
+      val invFirst = theme._4(first) / (theme._4(first) * theme._3)
+      val lowFirst = theme._4(first) * invFirst * invFirst * invFirst
+
+      val invSecond = theme._4(second) / (theme._4(second) * theme._3)
+      val lowSecond = theme._4(second) * invSecond * invSecond * invSecond
+
+      val invThird = theme._4(third) / (theme._4(third) * theme._3)
+      val lowThird = theme._4(second) * invThird * invThird * invThird
+
+      val filteredSoundLow = (audio: AudioInstrument) =>
+        lowPassFilter(audio, staticControl(75))
+
+      fmSawNote(startTime, 3, lowFirst, lowFirst * theme._3,
+        percModAmount,
+        percAmp(0.6),
+        () => lineControl(-0.5, -0.6),
+        filteredSoundLow,
+        outputBus = 0)
+
+      fmSawNote(startTime + 0.075, 1, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
+        sineModAmount,
+        sineAmp(0.6),
+        () => lineControl(-0.5, 0.5),
+        filteredSoundLow,
+        outputBus = 2)
+
+      fmSawNote(startTime + 0.25, 2, lowThird * 1.02, lowThird * theme._3 * 0.98,
+        percModAmount,
+        percAmp(0.6),
+        () => lineControl(0.5, 0.6),
+        filteredSoundLow,
         outputBus = 4)
     }
 
     val twoLongNote = (startTime: Double) => {
-      //val first: Int = 2
-      //val second: Int = 3
+
       val (first, second) = (3, 2)
       fmSawNote(startTime, 2, theme._4(first), theme._4(first) * theme._3,
         sineModAmount,
-        sineAmp,
+        sineAmp(0.4),
         () => lineControl(0.3, -0.2),
         filteredSound,
         outputBus = 0)
 
       fmSawNote(startTime + 0.2, 2, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
         sineModAmount,
-        sineAmp,
+        sineAmp(0.4),
         () => lineControl(-0.3, 0.2),
         filteredSound,
+        outputBus = 2)
+
+      val invertedFirst = theme._4(first) / (theme._4(first) * theme._3)
+      val lowFirst = theme._4(first) * invertedFirst * invertedFirst * invertedFirst
+
+      val invSecond = theme._4(second) / (theme._4(second) * theme._3)
+      val lowSecond = theme._4(second) * invSecond * invSecond * invSecond
+
+      val filteredSoundLow = (audio: AudioInstrument) =>
+        lowPassFilter(audio, staticControl(75))
+
+      fmSawNote(startTime, 2, lowFirst, lowFirst * theme._3,
+        sineModAmount,
+        sineAmp(0.6),
+        () => lineControl(0.5, -0.4),
+        filteredSoundLow,
+        outputBus = 0)
+
+      fmSawNote(startTime + 0.2, 2, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
+        sineModAmount,
+        sineAmp(0.6),
+        () => lineControl(-0.5, 0.4),
+        filteredSoundLow,
         outputBus = 2)
     }
 
@@ -636,8 +789,8 @@ object ModuleMusic5 {
 
     val percModAmount = () => relativePercControl(300, 3000, 0.001, Left(-8))
     val sineModAmount = () => relativePercControl(300, 3000, 0.3, Right(Instrument.SINE))
-    val percAmp = () => relativePercControl(0.001, 0.4, 0.001, Left(-8))
-    val sineAmp = () => relativePercControl(0.001, 0.4, 0.3, Right(Instrument.SINE))
+    val percAmp = (peak: Double) => () => relativePercControl(0.001, peak, 0.001, Left(-8))
+    val sineAmp = (peak: Double) => () => relativePercControl(0.001, peak, 0.3, Right(Instrument.SINE))
     val filteredSound = (audio: AudioInstrument) => bandRejectFilter(audio, staticControl(400), staticControl(2))
 
     val twoShortNote = (startTime: Double) => {
@@ -645,42 +798,98 @@ object ModuleMusic5 {
 
       fmSawNote(startTime, 1, theme._4(first) * 1.01, theme._4(first) * theme._3 * 0.99,
         sineModAmount,
-        sineAmp,
+        sineAmp(0.4),
         () => lineControl(0.2, -0.2),
         filteredSound,
         outputBus = 0)
 
       fmSawNote(startTime + 0.1, 3, theme._4(second), theme._4(second) * theme._3,
         percModAmount,
-        percAmp,
+        percAmp(0.4),
         () => lineControl(-0.2, 0.2),
         filteredSound,
         outputBus = 2)
+
+      val invertedFirst = theme._4(first) / (theme._4(first) * theme._3)
+      val lowFirst = theme._4(first) * invertedFirst * invertedFirst * invertedFirst
+
+      val invSecond = theme._4(second) / (theme._4(second) * theme._3)
+      val lowSecond = theme._4(second) * invSecond * invSecond * invSecond
+
+      val filteredSoundLow = (audio: AudioInstrument) =>
+        lowPassFilter(audio, staticControl(75))
+
+      fmSawNote(startTime, 1, lowFirst * 1.01, lowFirst * theme._3 * 0.99,
+        sineModAmount,
+        sineAmp(0.6),
+        () => lineControl(0.4, -0.4),
+        filteredSoundLow,
+        outputBus = 0)
+
+      fmSawNote(startTime + 0.1, 3, lowSecond, lowSecond * theme._3,
+        percModAmount,
+        percAmp(0.6),
+        () => lineControl(-0.4, 0.4),
+        filteredSoundLow,
+        outputBus = 2)
+
     }
 
     val threeShortNote = (startTime: Double) => {
       val (first, second, third) = (3, 2, 3)
 
-
       fmSawNote(startTime, 2, theme._4(first) * 1.02, theme._4(first) * theme._3 * 0.98,
         percModAmount,
-        percAmp,
+        percAmp(0.4),
         () => lineControl(0.3, 0.4),
         filteredSound,
         outputBus = 0)
 
       fmSawNote(startTime + 0.075, 1, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
         sineModAmount,
-        sineAmp,
+        sineAmp(0.4),
         () => lineControl(-0.3, 0.3),
         filteredSound,
         outputBus = 2)
 
       fmSawNote(startTime + 0.25, 3, theme._4(third), theme._4(third) * theme._3,
         percModAmount,
-        percAmp,
+        percAmp(0.4),
         () => lineControl(-0.3, -0.4),
         filteredSound,
+        outputBus = 4)
+
+      val invFirst = theme._4(first) / (theme._4(first) * theme._3)
+      val lowFirst = theme._4(first) * invFirst * invFirst * invFirst
+
+      val invSecond = theme._4(second) / (theme._4(second) * theme._3)
+      val lowSecond = theme._4(second) * invSecond * invSecond * invSecond
+
+      val invThird = theme._4(third) / (theme._4(third) * theme._3)
+      val lowThird = theme._4(second) * invThird * invThird * invThird
+
+      val filteredSoundLow = (audio: AudioInstrument) =>
+        lowPassFilter(audio, staticControl(75))
+
+      fmSawNote(startTime, 2, lowFirst * 1.02, lowFirst * theme._3 * 0.98,
+        percModAmount,
+        percAmp(0.6),
+        () => lineControl(0.5, 0.6),
+        filteredSoundLow,
+        outputBus = 0)
+
+      fmSawNote(startTime + 0.075, 1, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
+        sineModAmount,
+        sineAmp(0.6),
+        () => lineControl(-0.5, 0.5),
+        filteredSoundLow,
+        outputBus = 2)
+
+      fmSawNote(startTime + 0.25, 3, lowThird, lowThird * theme._3,
+        percModAmount,
+        percAmp(0.6),
+        () => lineControl(-0.5, -0.6),
+        filteredSoundLow,
         outputBus = 4)
     }
 
@@ -689,16 +898,39 @@ object ModuleMusic5 {
 
       fmSawNote(startTime, 2, theme._4(first) * 1.01, theme._4(first) * theme._3 * 0.99,
         sineModAmount,
-        sineAmp,
+        sineAmp(0.4),
         () => lineControl(-0.3, 0.2),
         filteredSound,
         outputBus = 0)
 
       fmSawNote(startTime + 0.2, 2, theme._4(second), theme._4(second) * theme._3,
         sineModAmount,
-        sineAmp,
+        sineAmp(0.4),
         () => lineControl(0.3, -0.2),
         filteredSound,
+        2)
+
+      val invertedFirst = theme._4(first) / (theme._4(first) * theme._3)
+      val lowFirst = theme._4(first) * invertedFirst * invertedFirst * invertedFirst
+
+      val invSecond = theme._4(second) / (theme._4(second) * theme._3)
+      val lowSecond = theme._4(second) * invSecond * invSecond * invSecond
+
+      val filteredSoundLow = (audio: AudioInstrument) =>
+        lowPassFilter(audio, staticControl(75))
+
+      fmSawNote(startTime, 2, lowFirst * 1.01, lowFirst * theme._3 * 0.99,
+        sineModAmount,
+        sineAmp(0.6),
+        () => lineControl(-0.5, 0.4),
+        filteredSoundLow,
+        outputBus = 0)
+
+      fmSawNote(startTime + 0.2, 2, lowSecond, lowSecond * theme._3,
+        sineModAmount,
+        sineAmp(0.6),
+        () => lineControl(0.5, -0.4),
+        filteredSoundLow,
         2)
     }
 
@@ -757,45 +989,90 @@ object ModuleMusic5 {
 
       val percModAmount = () => relativePercControl(300, 3000, 0.001, Left(-8))
       val sineModAmount = () => relativePercControl(300, 3000, 0.3, Right(Instrument.SINE))
-      val percAmp = () => relativePercControl(0.001, 0.4, 0.001, Left(-8))
-      val sineAmp = () => relativePercControl(0.001, 0.4, 0.3, Right(Instrument.SINE))
+      val percAmp = (peak: Double) => () => relativePercControl(0.001, peak, 0.001, Left(-8))
+      val sineAmp = (peak: Double) => () => relativePercControl(0.001, peak, 0.3, Right(Instrument.SINE))
       val filteredSound = (audio: AudioInstrument) => bandRejectFilter(audio, staticControl(400), staticControl(2))
 
       val twoShortNote = (startTime: Double) => {
         val (first, second) = (2, 3)
-        //val first: Int = 2
-        //val second: Int = 3
+
         fmSawNote(startTime, 3, theme._4(first), theme._4(first) * theme._3,
           percModAmount,
-          percAmp,
+          percAmp(0.4),
           () => lineControl(-0.2, 0.2),
           filteredSound,
           outputBus = 0)
 
         fmSawNote(startTime + 0.1, 1, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
           sineModAmount,
-          sineAmp,
+          sineAmp(0.4),
           () => lineControl(0.2, -0.2),
           filteredSound,
+          outputBus = 2)
+
+        val invertedFirst = theme._4(first) / (theme._4(first) * theme._3)
+        val lowFirst = theme._4(first) * invertedFirst * invertedFirst * invertedFirst
+
+        val invSecond = theme._4(second) / (theme._4(second) * theme._3)
+        val lowSecond = theme._4(second) * invSecond * invSecond * invSecond
+
+        val filteredSoundLow = (audio: AudioInstrument) =>
+          lowPassFilter(audio, staticControl(75))
+
+        fmSawNote(startTime, 3, lowFirst, lowFirst * theme._3,
+          percModAmount,
+          percAmp(0.6),
+          () => lineControl(-0.4, 0.4),
+          filteredSoundLow,
+          outputBus = 0)
+
+        fmSawNote(startTime + 0.1, 1, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
+          sineModAmount,
+          sineAmp(0.6),
+          () => lineControl(0.4, -0.4),
+          filteredSoundLow,
           outputBus = 2)
       }
 
       val twoLongNote = (startTime: Double) => {
-        //val first: Int = 2
-        //val second: Int = 3
+
         val (first, second) = (2, 3)
+
         fmSawNote(startTime, 2, theme._4(first), theme._4(first) * theme._3,
           sineModAmount,
-          sineAmp,
+          sineAmp(0.4),
           () => lineControl(0.3, -0.2),
           filteredSound,
           outputBus = 0)
 
         fmSawNote(startTime + 0.2, 2, theme._4(second) * 1.01, theme._4(second) * theme._3 * 0.99,
           sineModAmount,
-          sineAmp,
+          sineAmp(0.4),
           () => lineControl(-0.3, 0.2),
           filteredSound,
+          outputBus = 2)
+
+        val invertedFirst = theme._4(first) / (theme._4(first) * theme._3)
+        val lowFirst = theme._4(first) * invertedFirst * invertedFirst * invertedFirst
+
+        val invSecond = theme._4(second) / (theme._4(second) * theme._3)
+        val lowSecond = theme._4(second) * invSecond * invSecond * invSecond
+
+        val filteredSoundLow = (audio: AudioInstrument) =>
+          lowPassFilter(audio, staticControl(75))
+
+        fmSawNote(startTime, 2, lowFirst, lowFirst * theme._3,
+          sineModAmount,
+          sineAmp(0.6),
+          () => lineControl(0.5, -0.4),
+          filteredSoundLow,
+          outputBus = 0)
+
+        fmSawNote(startTime + 0.2, 2, lowSecond * 1.01, lowSecond * theme._3 * 0.99,
+          sineModAmount,
+          sineAmp(0.6),
+          () => lineControl(-0.5, 0.4),
+          filteredSoundLow,
           outputBus = 2)
       }
 
